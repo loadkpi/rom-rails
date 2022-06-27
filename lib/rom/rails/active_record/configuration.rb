@@ -34,12 +34,16 @@ module ROM
         #
         # @note This relies on ActiveRecord being initialized already.
         # @param [Rails::Application]
-        #
-        # @api private
         def call
-          specs = { default: build(default_configuration.configuration_hash.symbolize_keys) }
+          specs = { default: build(default_configuration.symbolize_keys) }
 
-          if rails6_or_later?
+          if rails6?
+            configurations.configs_for(env_name: env).each do |config|
+              specs[config.spec_name.to_sym] = build(config.config.symbolize_keys)
+            end
+          end
+
+          if rails7?
             configurations.configs_for(env_name: env).each do |config|
               specs[config.name.to_sym] = build(config.configuration_hash.symbolize_keys)
             end
@@ -49,8 +53,10 @@ module ROM
         end
 
         def default_configuration
-          if rails6_or_later?
-            configurations.find_db_config(env)
+          if rails6?
+            configurations.default_hash(env)
+          elsif rails7?
+            configurations.find_db_config(env).configuration_hash
           else
             configurations.fetch(env)
           end
@@ -79,6 +85,14 @@ module ROM
         end
 
         private
+
+        def rails6?
+          ::ActiveRecord::VERSION::MAJOR == 6
+        end
+
+        def rails7?
+          ::ActiveRecord::VERSION::MAJOR == 7
+        end
 
         def rails6_or_later?
           ::ActiveRecord::VERSION::MAJOR >= 6
