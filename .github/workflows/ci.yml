@@ -41,14 +41,14 @@ jobs:
         exclude:
           - ruby: "2.4"
             rails: "7.0.0"
-          - ruby: "2.5"
-            rails: "7.0.0"
-          - ruby: "2.6"
-            rails: "7.0.0"
           - ruby: "2.4"
             rails: "6.0.0"
           - ruby: "2.4"
             rails: "6.1.0"
+          - ruby: "2.5"
+            rails: "7.0.0"
+          - ruby: "2.6"
+            rails: "7.0.0"
           - ruby: "2.7"
             rails: "4.2.0"
           - ruby: "3.1"
@@ -59,6 +59,8 @@ jobs:
             rails: "5.1.0"
           - ruby: "3.1"
             rails: "5.2.0"
+          - ruby: "jruby"
+            rails: "7.0.0"
     env:
       APT_DEPS: libsqlite3-dev
       RAILS_VERSION: "${{matrix.rails}}"
