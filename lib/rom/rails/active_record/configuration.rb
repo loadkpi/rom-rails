@@ -37,11 +37,11 @@ module ROM
         #
         # @api private
         def call
-          specs = { default: build(default_configuration.symbolize_keys) }
+          specs = { default: build(default_configuration.configuration_hash.symbolize_keys) }
 
-          if rails6?
+          if rails6_or_later?
             configurations.configs_for(env_name: env).each do |config|
-              specs[config.spec_name.to_sym] = build(config.config.symbolize_keys)
+              specs[config.name.to_sym] = build(config.configuration_hash.symbolize_keys)
             end
           end
 
@@ -49,8 +49,8 @@ module ROM
         end
 
         def default_configuration
-          if rails6?
-            configurations.default_hash(env)
+          if rails6_or_later?
+            configurations.find_db_config(env)
           else
             configurations.fetch(env)
           end
@@ -80,7 +80,7 @@ module ROM
 
         private
 
-        def rails6?
+        def rails6_or_later?
           ::ActiveRecord::VERSION::MAJOR >= 6
         end
       end
